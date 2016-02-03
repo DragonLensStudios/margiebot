@@ -208,6 +208,10 @@
       <Project>{1c8dacef-74f1-45d2-ac76-b65dfb3dbca9}</Project>
       <Name>MargieBot</Name>
     </ProjectReference>
+    <ProjectReference Include="..\RegexDiceDotNet\RegexDiceDotNet.csproj">
+      <Project>{f14fa13c-36df-455d-9b20-892b7d5e5e7f}</Project>
+      <Name>RegexDiceDotNet</Name>
+    </ProjectReference>
   </ItemGroup>
   <ItemGroup>
     <Resource Include="Assets\margie-warlock.jpg" />

@@ -10,23 +10,25 @@ using MargieBot.ExampleResponders.Models;
 using MargieBot.ExampleResponders.Responders;
 using MargieBot.Responders;
 using System.Configuration;
+using MargieBot.Custom_Responders;
+using RegexDiceDotNet;
 
 namespace MargieBot.UI.ViewModels
 {
     public class MainWindowViewModel : ViewModelBase<MainWindowViewModel>
     {
-        private bool _RememberMe = true;
-        public bool RememberMe
+        private bool _RememberKey = true;
+        public bool RememberKey
         {
             get
             {
-                return _RememberMe;
+                return _RememberKey;
             }
             set
             {
                 Properties.Settings.Default.RememberKey = value;
                 Properties.Settings.Default.Save();
-                ChangeProperty(vm => vm.RememberMe, value);
+                ChangeProperty(vm => vm.RememberKey, value);
 //                Console.WriteLine($"CURRENT TOGGLE: {value} Current key: {Properties.Settings.Default.SlackKey}");
             }
 
@@ -211,58 +213,122 @@ namespace MargieBot.UI.ViewModels
         {
             // Some of these are more complicated than they need to be for the sake of example
             List<IResponder> responders = new List<IResponder>();
-
             // examples of semi-complex or "messier" responders (created in separate classes)
-            responders.Add(new ScoreResponder());
-            responders.Add(new ScoreboardRequestResponder());
-            responders.Add(new WhatsNewResponder());
-            responders.Add(new WikipediaResponder());
-
-            // if you want to use these, you'll need to sign up for api keys from http://wunderground.com and http://www.dictionaryapi.com/ - they're free! Put them in your app.config and you're good to go.
-            responders.Add(new WeatherRequestResponder(ConfigurationManager.AppSettings["wundergroundApiKey"]));
-            responders.Add(new DefineResponder(ConfigurationManager.AppSettings["dictionaryApiKey"]));
-
-            // examples of simple-ish "inline" responders
-            // this one hits on Slackbot when he talks 1/8 times or so
-            _Margie.Responders.Add(_Margie.CreateResponder(
-                (ResponseContext context) => { return (context.Message.User.IsSlackbot && new Random().Next(8) <= 1); },
-                (ResponseContext context) => { return context.Get<Phrasebook>().GetSlackbotSalutation(); }
-            ));
-
-            // easiest one of all - this one responds if someone thanks Margie
-            responders.Add(_Margie.CreateResponder(
-                (ResponseContext context) => { return context.Message.MentionsBot && Regex.IsMatch(context.Message.Text, @"\b(thanks|thank you)\b", RegexOptions.IgnoreCase); },
-                (ResponseContext context) => { return context.Get<Phrasebook>().GetYoureWelcome(); }
-            ));
-
-            // example of Supa Fly Mega EZ Syntactic Sugary Responder (not their actual name)
-            _Margie
-                .RespondsTo("get on that")
-                .With("Sure, hun!")
-                .With("I'll see what I can do, sugar.")
-                .With("I'll try. No promises, though!")
-                .IfBotIsMentioned();
-
-            // you can do these with regexes too
-            _Margie
-                .RespondsTo("what (can|do) you do", true)
-                .With(@"Lots o' things! I mean, potentially, anyway. Right now I'm real good at keepin' score (try plus-one-ing one of your buddies sometime). I'm learnin' about how to keep up with the weather from my friend DonnaBot. I also can't quite keep my eyes off a certain other bot around here :) If there's anythin' else you think I can help y'all with, just say so! The feller who made me tends to keep an eye on me and see how I'm doin'. So there ya have it.")
-                .IfBotIsMentioned();
-
-            // this last one just responds if someone says "hi" or whatever to Margie, but only if no other responder has responded
-            responders.Add(_Margie.CreateResponder(
-                (ResponseContext context) => {
-                    return
-                        context.Message.MentionsBot &&
-                        !context.BotHasResponded &&
-                        Regex.IsMatch(context.Message.Text, @"\b(hi|hey|hello|what's up|what's happening)\b", RegexOptions.IgnoreCase) &&
-                        context.Message.User.ID != context.BotUserID &&
-                        !context.Message.User.IsSlackbot;
-                },
-                (ResponseContext context) => {
-                    return context.Get<Phrasebook>().GetQuery();
-                }
-            ));
+//            responders.Add(new ScoreResponder());
+            responders.Add(new DnD_Responder());
+//            responders.Add(new ScoreboardRequestResponder());
+//            responders.Add(new WhatsNewResponder());
+            responders.Add(new WikipediaResponder()); //KEEP
+//
+//            // if you want to use these, you'll need to sign up for api keys from http://wunderground.com and http://www.dictionaryapi.com/ - they're free! Put them in your app.config and you're good to go.
+//            responders.Add(new WeatherRequestResponder(ConfigurationManager.AppSettings["wundergroundApiKey"]));
+//            responders.Add(new DefineResponder(ConfigurationManager.AppSettings["dictionaryApiKey"]));
+//
+//            // examples of simple-ish "inline" responders
+//            // this one hits on Slackbot when he talks 1/8 times or so
+//            _Margie.Responders.Add(_Margie.CreateResponder(
+//                (ResponseContext context) => { return (context.Message.User.IsSlackbot && new Random().Next(8) <= 1); },
+//                (ResponseContext context) => { return context.Get<Phrasebook>().GetSlackbotSalutation(); }
+//            ));
+//
+//            // easiest one of all - this one responds if someone thanks Margie
+//            responders.Add(_Margie.CreateResponder(
+//                (ResponseContext context) => { return context.Message.MentionsBot && Regex.IsMatch(context.Message.Text, @"\b(thanks|thank you)\b", RegexOptions.IgnoreCase); },
+//                (ResponseContext context) => { return context.Get<Phrasebook>().GetYoureWelcome(); }
+//            ));
+//
+//
+////            var match2 = int.Parse(Regex.Matches(@"roll\s*(\d*)d(\d*)")[0].Value);
+////            responders.Add(_Margie.CreateResponder(
+////                (ResponseContext context) => { return Regex.IsMatch(context.Message.Text, pattern, RegexOptions.IgnoreCase);
+////                                                 match1 = Regex.Match(context.Message.Text, pattern);
+////                },
+//////                (ResponseContext context) => { return new Random().Next(1, 20).ToString(); }
+////                (ResponseContext context) => { return; }
+////            ));
+//
+////            responders.Add(_Margie.CreateResponder(
+////                (ResponseContext context) => { return context.Message.MentionsBot && Regex.IsMatch(context.Message.Text, DiceParameters.DicePattern, RegexOptions.IgnoreCase); },
+////                (ResponseContext context) => { return "ROLLED: " + Dice.Roll(context.Message.Text); }
+////                ));
+//
+////            _Margie
+////                .RespondsTo("D&D")
+////                .With("Dungeons and Dragons")
+////                .IfBotIsMentioned();
+//                
+//            // example of Supa Fly Mega EZ Syntactic Sugary Responder (not their actual name)
+//            _Margie
+//                .RespondsTo("get on that")
+//                .With("Sure, hun!")
+//                .With("I'll see what I can do, sugar.")
+//                .With("I'll try. No promises, though!")
+//                .IfBotIsMentioned();
+//
+//            // you can do these with regexes too
+//            _Margie
+//                .RespondsTo("what (can|do) you do", true)
+//                .With(@"Lots o' things! I mean, potentially, anyway. Right now I'm real good at keepin' score (try plus-one-ing one of your buddies sometime). I'm learnin' about how to keep up with the weather from my friend DonnaBot. I also can't quite keep my eyes off a certain other bot around here :) If there's anythin' else you think I can help y'all with, just say so! The feller who made me tends to keep an eye on me and see how I'm doin'. So there ya have it.")
+//                .IfBotIsMentioned();
+//
+////            var pattern = @"roll\s*(\d*)d(\d*)";
+////            Match match1;
+////            int num1 = 0;
+////            int num2 = 0;
+//
+//
+////            responders.Add(_Margie.CreateResponder(
+////                (ResponseContext context) =>
+////                {
+////                    match1 = Regex.Match(context.Message.Text, pattern);
+////                    return Regex.IsMatch(context.Message.Text, pattern, RegexOptions.IgnoreCase);
+////
+////                },
+////                (ResponseContext context) => 
+////                {
+////                    match1 = Regex.Match(context.Message.Text, pattern);
+////                    num1 = int.Parse(match1.Groups[0].Value);
+////                    num2 = int.Parse(match1.Groups[1].Value);
+////                    Random rand = new Random();
+////                    var total = 0;
+////                    for (int i = 0; i < num1; i++)
+////                    {
+////                        total += rand.Next(1, num2);
+////                    }
+////                    string message = $"{context.Message.User.FormattedUserID} Rolled: {num1} d{num2}'s for a total of: {total} ";
+////                    return message;
+////                }
+////            ));
+//
+//
+//
+//            // this last one just responds if someone says "hi" or whatever to Margie, but only if no other responder has responded
+//            responders.Add(_Margie.CreateResponder(
+//                (ResponseContext context) => {
+//                    return
+//                        context.Message.MentionsBot &&
+//                        !context.BotHasResponded &&
+//                        Regex.IsMatch(context.Message.Text, @"\b(hi|hey|hello|what's up|what's happening)\b", RegexOptions.IgnoreCase) &&
+//                        context.Message.User.ID != context.BotUserID &&
+//                        !context.Message.User.IsSlackbot;
+//                },
+//                (ResponseContext context) => {
+//                    return context.Get<Phrasebook>().GetQuery();
+//                }
+//            ));
+//
+//            //DND rolling
+////            responders.Add(_Margie.CreateResponder(
+////                (ResponseContext context) =>
+////                {
+////                    return
+////                        context.Message.MentionsBot &&
+////                        context.Message.Text == "1d20";
+////                },
+////                (ResponseContext context) => {
+////                    return $"YOU ROLLED A DICE!: {Dice.Roll(1,20)} ";
+////                }
+////            ));
 
             return responders;
         }
