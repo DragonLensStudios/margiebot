@@ -15,13 +15,39 @@ namespace MargieBot.UI.ViewModels
 {
     public class MainWindowViewModel : ViewModelBase<MainWindowViewModel>
     {
+        private bool _RememberMe = true;
+        public bool RememberMe
+        {
+            get
+            {
+                return _RememberMe;
+            }
+            set
+            {
+                Properties.Settings.Default.RememberKey = value;
+                Properties.Settings.Default.Save();
+                ChangeProperty(vm => vm.RememberMe, value);
+//                Console.WriteLine($"CURRENT TOGGLE: {value} Current key: {Properties.Settings.Default.SlackKey}");
+            }
+
+        }
         private Bot _Margie;
 
         private string _AuthKeySlack = string.Empty;
         public string AuthKeySlack
         {
-            get { return _AuthKeySlack; }
-            set { ChangeProperty(vm => vm.AuthKeySlack, value); }
+            get
+            {
+                var key = Properties.Settings.Default.RememberKey ? Properties.Settings.Default.SlackKey : _AuthKeySlack;
+                _AuthKeySlack = key;
+                return _AuthKeySlack;
+            }
+            set
+            {
+                Properties.Settings.Default.SlackKey = value;
+                Properties.Settings.Default.Save();
+                ChangeProperty(vm => vm.AuthKeySlack, value);
+            }
         }
 
         private string _BotUserID = string.Empty;
@@ -140,7 +166,7 @@ namespace MargieBot.UI.ViewModels
                             for (int i = 0; i < messageCount; i++) {
                                 _Messages.RemoveAt(0);
                             }
-
+                            
                             _Messages.Add(message);
                             RaisePropertyChanged("Messages");
                         };
@@ -169,7 +195,7 @@ namespace MargieBot.UI.ViewModels
         /// <returns>A list of aliases that will cause the BotWasMentioned property of the ResponseContext to be true</returns>
         private IReadOnlyList<string> GetAliases()
         {
-            return new List<string>() { "Margie" };
+            return new List<string>() { "Amee" };
         }
 
         /// <summary>

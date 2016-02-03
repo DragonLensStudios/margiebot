@@ -4,7 +4,7 @@
     xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
     xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
     xmlns:bazamConvert="clr-namespace:Bazam.Wpf.ValueConverters;assembly=Bazam.Wpf"
-    xmlns:convert="clr-namespace:MargieBot.UI.Views.Helpers.ValueConverters">
+    xmlns:convert="clr-namespace:MargieBot.UI.Views.Helpers.ValueConverters" Loaded="UserControl_Loaded" Initialized="UserControl_Initialized">
     <Grid>
         <Grid.Resources>
             <convert:BoolToConnectionButtonTextConverter x:Key="BoolToConnectionButtonTextConverter" />
@@ -22,7 +22,7 @@
             <RowDefinition Height="*" />
             <RowDefinition Height="Auto" />
         </Grid.RowDefinitions>
-        
+
         <Grid.ColumnDefinitions>
             <ColumnDefinition />
             <ColumnDefinition />
@@ -39,7 +39,7 @@
             Grid.ColumnSpan="2"
             Text="{Binding AuthKeySlack, UpdateSourceTrigger=PropertyChanged, Mode=TwoWay}"
             Visibility="{Binding ConnectionStatus, Converter={StaticResource BooleanVisibilityConverter}, ConverterParameter=true}" />
-        <TextBlock
+        <TextBlock x:Name="SlackKeyText"
             Grid.Row="1"
             Grid.ColumnSpan="2"
             Text="{Binding AuthKeySlack, UpdateSourceTrigger=PropertyChanged}"
@@ -58,7 +58,7 @@
             Style="{StaticResource FieldLabelStyle}"
             Text="team name"
             Visibility="{Binding TeamName, Converter={StaticResource StringVisibilityConverter}}" />
-        
+
         <TextBlock 
             Grid.Row="3"
             Grid.Column="0"
@@ -96,11 +96,23 @@
             Grid.Column="1"
             Text="{Binding ConnectedSince}"
             Visibility="{Binding ConnectedSince, Converter={StaticResource ObjectVisibilityConverter}}" />
+        <CheckBox 
+            x:Name="RememberKeyCheck" 
+            Content="Remember Key" 
+            HorizontalAlignment="Left" 
+            VerticalAlignment="Top" 
+            Margin="0,0.222,0,0" 
+            Grid.Row="2" 
+            Grid.ColumnSpan="2"
+            IsChecked="{Binding RememberMe, Mode=TwoWay}" />
 
         <Button 
             Grid.Row="7"
             Grid.ColumnSpan="2"
             Command="{Binding ConnectCommand}" 
             Content="{Binding ConnectionStatus, Converter={StaticResource BoolToConnectionButtonTextConverter}}" />
+        <!--            Command="{Binding SetRememberMe}"-->
+        <!--            CommandParameter="{Binding IsChecked,RelativeSource={RelativeSource Self}}"/>-->
+
     </Grid>
 </UserControl>

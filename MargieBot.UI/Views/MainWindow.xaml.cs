@@ -8,5 +8,6 @@ namespace MargieBot.UI.Views
         {
             InitializeComponent();
         }
+
     }
 }
